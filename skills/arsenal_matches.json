@@ -1,0 +1,46 @@
+{
+  "id": "arsenal_matches",
+  "name": "Arsenal Matches",
+  "description": "Shows Arsenal's last played game and next scheduled game on demand.",
+  "trigger": {
+    "type": "command",
+    "command": "arsenal"
+  },
+  "data_sources": [
+    {
+      "id": "last_match",
+      "type": "http",
+      "url": "https://api.football-data.org/v4/teams/57/matches",
+      "method": "GET",
+      "params": {
+        "status": "FINISHED",
+        "limit": 1,
+        "ordering": "-utcDate"
+      },
+      "headers": {
+        "X-Auth-Token": "{{FOOTBALL_API_KEY}}"
+      },
+      "body": null,
+      "timeout": 15
+    },
+    {
+      "id": "next_match",
+      "type": "http",
+      "url": "https://api.football-data.org/v4/teams/57/matches",
+      "method": "GET",
+      "params": {
+        "status": "SCHEDULED",
+        "limit": 1
+      },
+      "headers": {
+        "X-Auth-Token": "{{FOOTBALL_API_KEY}}"
+      },
+      "body": null,
+      "timeout": 15
+    }
+  ],
+  "message_template": "🔴 *Arsenal FC — Matches*\n\n{% set last = last_match.matches[-1] if last_match.matches else None %}{% set nxt = next_match.matches[0] if next_match.matches else None %}*🏁 Last Match*\n{% if last %}{{ last.utcDate | format_date('%A, %b %d') }}\n🏆 {{ last.competition.name }}\n{{ last.homeTeam.name }} *{{ last.score.fullTime.home }} — {{ last.score.fullTime.away }}* {{ last.awayTeam.name }}\n{% else %}_No recent match found._\n{% endif %}\n*📅 Next Match*\n{% if nxt %}{{ nxt.utcDate | format_date('%A, %b %d') }} _({{ nxt.utcDate | relative_time }})_\n🏆 {{ nxt.competition.name }}\n{{ nxt.homeTeam.name }} 🆚 {{ nxt.awayTeam.name }}\n{% else %}_No upcoming match scheduled._\n{% endif %}",
+  "parse_mode": "Markdown",
+  "enabled": true,
+  "created_at": "2026-03-14T20:42:00"
+}
