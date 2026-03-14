@@ -12,3 +12,4 @@
 - [2026-03-14 18:38:34] Created skill: Arsenal Next Match (arsenal_next_match)
 - [2026-03-14 18:42:28] Deleted skill: Arsenal Next Match (arsenal_next_match)
 - [2026-03-14 18:43:09] Created skill: Arsenal Matches (arsenal_matches)
+- [2026-03-14 19:35:00] Deleted skill: Hit Ran Reminder (reminder_one_hour)
