@@ -1,0 +1,15 @@
+{
+  "id": "reminder_one_hour",
+  "name": "Hit Ran Reminder",
+  "description": "One-time reminder in one hour to hit Ran",
+  "trigger": {
+    "type": "once",
+    "run_at": "2026-03-14T21:35:00",
+    "timezone": "Asia/Jerusalem"
+  },
+  "data_sources": [],
+  "message_template": "⏰ *Reminder!*\n\nTime to hit Ran! 👊",
+  "parse_mode": "Markdown",
+  "enabled": true,
+  "created_at": "2026-03-14T20:35:00"
+}
