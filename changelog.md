@@ -10,3 +10,4 @@
 - [2026-03-14 14:08:13] Created skill: Manchester United Fixtures (manchester_united_fixtures)
 - [2026-03-14 18:35:49] Created skill: Hit Ran Reminder (reminder_one_hour)
 - [2026-03-14 18:38:34] Created skill: Arsenal Next Match (arsenal_next_match)
+- [2026-03-14 18:42:28] Deleted skill: Arsenal Next Match (arsenal_next_match)
