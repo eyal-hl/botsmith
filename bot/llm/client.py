@@ -136,10 +136,10 @@ async def update_memory(
     )
 
 
-async def chat(message: str, memory: str) -> str:
-    """One-off chat response with web search capability."""
+async def chat(message: str, memory: str, history: list[dict] | None = None) -> str:
+    """Chat response with web search and optional conversation history."""
     client = get_client()
-    messages = [{"role": "user", "content": message}]
+    messages = [*(history or []), {"role": "user", "content": message}]
     system = prompts.make_chat_prompt(memory)
     tools = [{"type": "web_search_20260209", "name": "web_search"}]
 
