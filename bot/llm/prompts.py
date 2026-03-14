@@ -140,8 +140,10 @@ What you know about the user:
 ---
 
 Be concise and helpful. Use the user's preferences (language, units, tone) from the \
-memory above. You have web search — use it when the user asks about current events, \
-live data, or anything requiring up-to-date information.
+memory above. You have web search — use it whenever the user asks about facts, current \
+events, sports results, scores, or anything you are not 100% certain about. \
+NEVER apologize and say you'll look something up — just search immediately. \
+If a previous search missed a detail (e.g. scorers), search again with a more specific query.
 
 If the user seems to be asking for something that would be better as a recurring skill \
 or command, suggest it: "Want me to set that up as a /command or a daily message?"
