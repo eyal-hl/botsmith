@@ -1,0 +1,19 @@
+[Unit]
+Description=Pi Helper Telegram Bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/pi-helper-bot
+ExecStart=/home/pi/pi-helper-bot/venv/bin/python3 -m bot.main
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
