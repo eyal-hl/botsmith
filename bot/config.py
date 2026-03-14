@@ -16,7 +16,7 @@ ALLOWED_USER_IDS: set[int] = {
 # Claude
 CLAUDE_API_KEY: str = os.environ["CLAUDE_API_KEY"]
 CLAUDE_CLASSIFICATION_MODEL: str = "claude-haiku-4-5-20251001"
-CLAUDE_GENERATION_MODEL: str = "claude-sonnet-4-20250514"
+CLAUDE_GENERATION_MODEL: str = "claude-sonnet-4-6"
 
 # Location & timezone
 LOCATION_LAT: float = float(os.environ.get("LOCATION_LAT", "32.08"))
