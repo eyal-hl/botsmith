@@ -15,8 +15,8 @@ from telegram.ext import (
 )
 
 from bot import config
+from bot.config import is_authorized
 from bot.core import skill_registry, skill_scheduler
-from bot.handlers.message_router import is_authorized
 from bot.llm import client as llm_client
 from bot.llm.schemas import CronTrigger, CommandTrigger
 

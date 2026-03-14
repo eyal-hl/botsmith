@@ -8,18 +8,12 @@ from telegram import Update
 from telegram.ext import ContextTypes
 
 from bot import config
+from bot.config import is_authorized
 from bot.handlers import chat_handler, memory_handler, skill_creator
 from bot.llm import client as llm_client
 from bot.llm.schemas import Intent
 
 logger = logging.getLogger(__name__)
-
-
-def is_authorized(user_id: int) -> bool:
-    """Check if a user is in the allowed list."""
-    if not config.ALLOWED_USER_IDS:
-        return True  # No whitelist = allow all (for initial setup)
-    return user_id in config.ALLOWED_USER_IDS
 
 
 async def route_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int | None:

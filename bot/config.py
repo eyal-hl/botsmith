@@ -65,6 +65,13 @@ CACHE_TTLS: dict[str, int] = {
     "default": 900,                    # 15 min fallback
 }
 
+def is_authorized(user_id: int) -> bool:
+    """Check if a user is in the allowed list."""
+    if not ALLOWED_USER_IDS:
+        return True  # No whitelist = allow all (for initial setup)
+    return user_id in ALLOWED_USER_IDS
+
+
 # Ensure directories exist
 SKILLS_DIR.mkdir(exist_ok=True)
 PLUGINS_DIR.mkdir(exist_ok=True)
