@@ -1,0 +1,45 @@
+{
+  "id": "manchester_united_fixtures",
+  "name": "Manchester United Fixtures",
+  "description": "Shows Manchester United's last and next match results via football-data.org API",
+  "trigger": {
+    "type": "command",
+    "command": "manchester"
+  },
+  "data_sources": [
+    {
+      "id": "last_game",
+      "type": "http",
+      "url": "https://api.football-data.org/v4/teams/66/matches",
+      "method": "GET",
+      "params": {
+        "status": "FINISHED",
+        "limit": 1
+      },
+      "headers": {
+        "X-Auth-Token": "{{FOOTBALL_API_KEY}}"
+      },
+      "body": null,
+      "timeout": 15
+    },
+    {
+      "id": "next_game",
+      "type": "http",
+      "url": "https://api.football-data.org/v4/teams/66/matches",
+      "method": "GET",
+      "params": {
+        "status": "SCHEDULED",
+        "limit": 1
+      },
+      "headers": {
+        "X-Auth-Token": "{{FOOTBALL_API_KEY}}"
+      },
+      "body": null,
+      "timeout": 15
+    }
+  ],
+  "message_template": "🔴 *Manchester United*\n\n{% set last = last_game.matches[-1] if last_game.matches else None %}{% set nxt = next_game.matches[0] if next_game.matches else None %}*⚽ Last Match*\n{% if last %}{% set home = last.homeTeam.name %}{% set away = last.awayTeam.name %}{% set sh = last.score.fullTime.home %}{% set sa = last.score.fullTime.away %}🏆 _{{ last.competition.name }}_\n{{ home }} *{{ sh }} - {{ sa }}* {{ away }}\n📅 {{ last.utcDate | format_date('%A, %b %d') }}\n{% if last.homeTeam.id == 66 %}{% if sh > sa %}✅ *Win*{% elif sh == sa %}🤝 *Draw*{% else %}❌ *Loss*{% endif %}{% else %}{% if sa > sh %}✅ *Win*{% elif sh == sa %}🤝 *Draw*{% else %}❌ *Loss*{% endif %}{% endif %}\n{% else %}_No recent match found_\n{% endif %}\n*📅 Next Match*\n{% if nxt %}🏆 _{{ nxt.competition.name }}_\n{{ nxt.homeTeam.name }} vs {{ nxt.awayTeam.name }}\n📅 {{ nxt.utcDate | format_date('%A, %b %d') }}\n⏰ {{ nxt.utcDate | relative_time }}\n{% else %}_No upcoming match scheduled_\n{% endif %}",
+  "parse_mode": "Markdown",
+  "enabled": true,
+  "created_at": "2026-03-14T16:05:00"
+}

@@ -7,3 +7,4 @@
 - [2026-03-14 14:03:10] Enabled skill: Manchester United Games (manchester_united_games)
 - [2026-03-14 14:03:14] Disabled skill: Manchester United Games (manchester_united_games)
 - [2026-03-14 14:04:50] Deleted skill: Manchester United Games (manchester_united_games)
+- [2026-03-14 14:08:13] Created skill: Manchester United Fixtures (manchester_united_fixtures)
