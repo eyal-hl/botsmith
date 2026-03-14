@@ -31,7 +31,15 @@ unless there's a clear recurring/scheduling element.
 - Respond with JSON only.
 """
 
-SKILL_GENERATION_PROMPT = f"""\
+def make_skill_generation_prompt() -> str:
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    now = datetime.now(ZoneInfo(config.TIMEZONE))
+    current_datetime = now.strftime("%Y-%m-%d %H:%M (%A)")
+    return _SKILL_GENERATION_PROMPT_TEMPLATE.replace("{{CURRENT_DATETIME}}", current_datetime)
+
+
+_SKILL_GENERATION_PROMPT_TEMPLATE = f"""\
 You are a skill generator for a personal Telegram bot running on a Raspberry Pi. \
 Your job is to convert the user's natural language request into a structured skill \
 definition (JSON).
@@ -85,6 +93,7 @@ Each data_source's response is available as `{{{{ source_id }}}}` in the templat
 - **once**: for one-time reminders. Use when the user says "remind me at X", "set a reminder for Y",
   or any phrasing that implies a single future fire. Set `run_at` to the target ISO datetime (e.g. "2026-03-15T09:00:00")
   and `timezone` to the user's timezone. The skill is automatically deleted after it fires.
+  Current date/time: {{CURRENT_DATETIME}}
 
 ## Important rules
 - Use Markdown parse_mode for formatting (bold = *text*, italic = _text_)
