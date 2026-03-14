@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 
 from telegram import Update
@@ -12,8 +13,8 @@ from bot.llm import client as llm_client
 
 logger = logging.getLogger(__name__)
 
-
 HISTORY_LIMIT = 10  # max messages to keep (user + assistant pairs)
+CHAT_TIMEOUT = 45   # seconds before giving up
 
 
 async def handle_chat(
@@ -22,16 +23,25 @@ async def handle_chat(
     """Handle a general chat message with conversation history and web search."""
     try:
         memory = read_memory()
-
-        # Load conversation history from user_data
         history: list[dict] = context.user_data.get("chat_history", [])
 
-        response = await llm_client.chat(message, memory, history)
+        # Show indicator so user knows bot received the message
+        await update.message.reply_text("🔍 Searching...")
+
+        try:
+            response = await asyncio.wait_for(
+                llm_client.chat(message, memory, history),
+                timeout=CHAT_TIMEOUT,
+            )
+        except asyncio.TimeoutError:
+            await update.message.reply_text(
+                "⏱ Search timed out. Try asking something more specific."
+            )
+            return
 
         # Update history
         history.append({"role": "user", "content": message})
         history.append({"role": "assistant", "content": response})
-        # Keep only the last HISTORY_LIMIT messages
         context.user_data["chat_history"] = history[-HISTORY_LIMIT:]
 
         # Telegram has a 4096 char limit per message
