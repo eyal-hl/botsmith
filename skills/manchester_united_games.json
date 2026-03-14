@@ -1,0 +1,45 @@
+{
+  "id": "manchester_united_games",
+  "name": "Manchester United Games",
+  "description": "Shows Manchester United's last match result and next upcoming fixture",
+  "trigger": {
+    "type": "command",
+    "command": "manchester"
+  },
+  "data_sources": [
+    {
+      "id": "last_match",
+      "type": "http",
+      "url": "https://api.football-data.org/v4/teams/66/matches",
+      "method": "GET",
+      "params": {
+        "status": "FINISHED",
+        "limit": "1"
+      },
+      "headers": {
+        "X-Auth-Token": "{{FOOTBALL_API_KEY}}"
+      },
+      "body": null,
+      "timeout": 15
+    },
+    {
+      "id": "next_match",
+      "type": "http",
+      "url": "https://api.football-data.org/v4/teams/66/matches",
+      "method": "GET",
+      "params": {
+        "status": "SCHEDULED",
+        "limit": "1"
+      },
+      "headers": {
+        "X-Auth-Token": "{{FOOTBALL_API_KEY}}"
+      },
+      "body": null,
+      "timeout": 15
+    }
+  ],
+  "message_template": "⚽ *Manchester United*\n\n*Last Match:*\n{% if last_match.matches %}{% set match = last_match.matches[0] %}{{ match.homeTeam.shortName }} {{ match.score.fullTime.home }}-{{ match.score.fullTime.away }} {{ match.awayTeam.shortName }}\n📅 {{ match.utcDate | from_timestamp | format_date('%B %d, %Y') }}\n🏆 {{ match.competition.name }}{% else %}No recent matches found{% endif %}\n\n*Next Match:*\n{% if next_match.matches %}{% set match = next_match.matches[0] %}🆚 {{ match.homeTeam.shortName }} vs {{ match.awayTeam.shortName }}\n📅 {{ match.utcDate | from_timestamp | format_date('%A, %B %d') }} at {{ match.utcDate | from_timestamp | format_date('%H:%M') }}\n🏆 {{ match.competition.name }}{% else %}No upcoming matches scheduled{% endif %}",
+  "parse_mode": "Markdown",
+  "enabled": true,
+  "created_at": "2024-12-28T18:24:00"
+}
