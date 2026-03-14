@@ -11,7 +11,6 @@ from telegram.ext import (
     Application,
     CallbackQueryHandler,
     CommandHandler,
-    MessageHandler,
     filters,
 )
 
@@ -170,32 +169,12 @@ def main() -> None:
         CallbackQueryHandler(memory_handler.handle_memory_cancel, pattern="^memory_cancel$")
     )
 
-    # Catch-all: route all other text messages through the LLM classifier
-    app.add_handler(
-        MessageHandler(
-            filters.TEXT & ~filters.COMMAND,
-            _handle_text_message,
-        )
-    )
-
     # Start polling
     logger.info("Starting polling...")
     app.run_polling(
         allowed_updates=Update.ALL_TYPES,
         drop_pending_updates=True,
     )
-
-
-async def _handle_text_message(update: Update, context) -> None:
-    """Route non-command text messages.
-
-    This wraps the message router to handle the case where it returns
-    a ConversationHandler state (for skill creation initiated via
-    natural language rather than /newskill).
-    """
-    result = await message_router.route_message(update, context)
-    # If the router started a skill creation flow, the ConversationHandler
-    # will pick it up from here since we store state in user_data.
 
 
 if __name__ == "__main__":
