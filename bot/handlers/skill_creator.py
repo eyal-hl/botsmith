@@ -48,8 +48,9 @@ def _format_skill_preview(skill, explanation: str) -> str:
         sources = [f"  • `{ds.id}`: {ds.url}" for ds in skill.data_sources]
         sources_desc = "\n📡 Data sources:\n" + "\n".join(sources)
 
+    title = "🔔 *New Reminder: {name}*" if isinstance(skill.trigger, OnceTrigger) else "🛠 *New Skill: {name}*"
     return (
-        f"🛠 *New Skill: {skill.name}*\n\n"
+        f"{title.format(name=skill.name)}\n\n"
         f"📝 {skill.description}\n"
         f"{trigger_desc}\n"
         f"{sources_desc}\n\n"
