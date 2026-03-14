@@ -137,16 +137,41 @@ async def update_memory(
 
 
 async def chat(message: str, memory: str) -> str:
-    """One-off chat response (returns plain text, no structured output)."""
+    """One-off chat response with web search capability."""
     client = get_client()
+    messages = [{"role": "user", "content": message}]
+    system = prompts.make_chat_prompt(memory)
+    tools = [{"type": "web_search_20260209", "name": "web_search"}]
+
     try:
-        response = await client.messages.create(
-            model=config.CLAUDE_CLASSIFICATION_MODEL,
-            max_tokens=2048,
-            system=prompts.make_chat_prompt(memory),
-            messages=[{"role": "user", "content": message}],
-        )
-        return response.content[0].text
+        # Server-side tool loop: handle pause_turn up to 5 continuations
+        for _ in range(5):
+            response = await client.messages.create(
+                model=config.CLAUDE_GENERATION_MODEL,
+                max_tokens=2048,
+                system=system,
+                messages=messages,
+                tools=tools,
+            )
+
+            if response.stop_reason == "end_turn":
+                text = next((b.text for b in response.content if b.type == "text"), "")
+                return text
+
+            if response.stop_reason == "pause_turn":
+                # Server loop hit its limit — re-send to continue
+                messages = [
+                    {"role": "user", "content": message},
+                    {"role": "assistant", "content": response.content},
+                ]
+                continue
+
+            # Unexpected stop reason
+            text = next((b.text for b in response.content if b.type == "text"), "")
+            return text
+
+        return "Sorry, the response took too long. Try again?"
+
     except Exception as e:
         logger.error("Chat LLM call failed: %s", e)
         return "Sorry, I'm having trouble connecting to my brain right now. Try again in a moment."
