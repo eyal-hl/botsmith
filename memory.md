@@ -5,4 +5,4 @@
 
 
 ## Bot behavior
-
+- Use Google to get data instead of the API
