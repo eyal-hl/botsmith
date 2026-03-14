@@ -61,6 +61,11 @@ async def cmd_start(update: Update, context) -> None:
     )
 
 
+async def cmd_help(update: Update, context) -> None:
+    """Handle /help command — same as /start."""
+    await cmd_start(update, context)
+
+
 async def cmd_memory(update: Update, context) -> None:
     """Show current memory.md contents."""
     if not message_router.is_authorized(update.effective_user.id):
@@ -149,6 +154,7 @@ def main() -> None:
 
     # Command handlers
     app.add_handler(CommandHandler("start", cmd_start))
+    app.add_handler(CommandHandler("help", cmd_help))
     app.add_handler(CommandHandler("skills", skill_manager.cmd_skills))
     app.add_handler(CommandHandler("enable", skill_manager.cmd_enable))
     app.add_handler(CommandHandler("disable", skill_manager.cmd_disable))
