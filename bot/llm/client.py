@@ -117,7 +117,7 @@ async def generate_skill(
     """Generate a skill definition from natural language."""
     context = f"User's memory/preferences:\n{memory}\n\nUser's request:\n{description}"
     return await _call_llm(
-        system=prompts.SKILL_GENERATION_PROMPT,
+        system=prompts.make_skill_generation_prompt(),
         user_message=context,
         model=config.CLAUDE_GENERATION_MODEL,
         response_model=SkillGenerationResult,
