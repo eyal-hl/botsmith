@@ -36,7 +36,7 @@ def make_skill_generation_prompt() -> str:
     from zoneinfo import ZoneInfo
     now = datetime.now(ZoneInfo(config.TIMEZONE))
     current_datetime = now.strftime("%Y-%m-%d %H:%M (%A)")
-    return _SKILL_GENERATION_PROMPT_TEMPLATE.replace("{{CURRENT_DATETIME}}", current_datetime)
+    return _SKILL_GENERATION_PROMPT_TEMPLATE.replace("{CURRENT_DATETIME}", current_datetime)
 
 
 _SKILL_GENERATION_PROMPT_TEMPLATE = f"""\
