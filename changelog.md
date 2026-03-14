@@ -6,3 +6,4 @@
 - [2026-03-14 14:01:00] Deleted skill: Test Reminder (once_reminder_test)
 - [2026-03-14 14:03:10] Enabled skill: Manchester United Games (manchester_united_games)
 - [2026-03-14 14:03:14] Disabled skill: Manchester United Games (manchester_united_games)
+- [2026-03-14 14:04:50] Deleted skill: Manchester United Games (manchester_united_games)
