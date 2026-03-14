@@ -131,12 +131,17 @@ async def execute_skill(
         }
 
         async def _fetch_source(ds):
+            # Resolve {{CONFIG_VAR}} placeholders in headers
+            resolved_headers = {
+                k: getattr(config, v[2:-2], v) if v.startswith("{{") and v.endswith("}}") else v
+                for k, v in ds.headers.items()
+            }
             data = await asyncio.wait_for(
                 data_fetcher.fetch(
                     url=ds.url,
                     method=ds.method,
                     params=ds.params,
-                    headers=ds.headers,
+                    headers=resolved_headers,
                     body=ds.body,
                     timeout=ds.timeout,
                 ),
@@ -175,19 +180,24 @@ async def execute_skill(
         await cache.log_execution(skill_id, False, error_msg, duration)
         logger.error("Skill %s failed: %s", skill_id, error_msg)
 
-        # Auto-disable after 3 consecutive failures
-        failures = await cache.get_consecutive_failures(skill_id)
-        if failures >= 3:
-            await toggle_skill(skill_id, enabled=False)
-            try:
+        # Notify user immediately on every failure
+        try:
+            failures = await cache.get_consecutive_failures(skill_id)
+            if failures >= 3:
+                await toggle_skill(skill_id, enabled=False)
                 await send_message_fn(
                     f"⚠️ Skill *{skill.name}* has been auto-disabled after "
                     f"3 consecutive failures.\n\n"
-                    f"Last error: `{error_msg[:200]}`\n\n"
+                    f"Error: `{error_msg[:200]}`\n\n"
                     f"Use /enable {skill_id} to re-enable.",
                     "Markdown",
                 )
-            except Exception:
-                pass
+            else:
+                await send_message_fn(
+                    f"❌ Skill *{skill.name}* failed.\n\nError: `{error_msg[:200]}`",
+                    "Markdown",
+                )
+        except Exception:
+            pass
 
         return False
