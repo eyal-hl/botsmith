@@ -242,11 +242,25 @@ def _clear_pending(context: ContextTypes.DEFAULT_TYPE) -> None:
     context.user_data.pop("original_request", None)
 
 
+async def _natural_language_entry(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> int:
+    """Entry point for natural language messages — classifies and routes.
+
+    Returning ConversationHandler.END for non-skill intents means the
+    conversation doesn't start; chat/memory are already handled inside route_message.
+    """
+    from bot.handlers.message_router import route_message
+    result = await route_message(update, context)
+    return result if result is not None else ConversationHandler.END
+
+
 def build_conversation_handler() -> ConversationHandler:
     """Build the ConversationHandler for skill creation flow."""
     return ConversationHandler(
         entry_points=[
             CommandHandler("newskill", _cmd_newskill),
+            MessageHandler(filters.TEXT & ~filters.COMMAND, _natural_language_entry),
         ],
         states={
             CONFIRMING: [
