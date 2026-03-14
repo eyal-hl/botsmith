@@ -8,8 +8,8 @@ from zoneinfo import ZoneInfo
 from telegram.ext import Application, CommandHandler, ContextTypes
 
 from bot.core import skill_executor
-from bot.core.skill_registry import get_all_skills, get_skill
-from bot.llm.schemas import CommandTrigger, CronTrigger, SkillDefinition
+from bot.core.skill_registry import delete_skill, get_all_skills, get_skill
+from bot.llm.schemas import CommandTrigger, CronTrigger, OnceTrigger, SkillDefinition
 
 logger = logging.getLogger(__name__)
 
@@ -130,6 +130,27 @@ def register_skill(skill: SkillDefinition) -> None:
             "Registered cron skill: %s (%s)", skill.id, trigger.cron
         )
 
+    elif isinstance(trigger, OnceTrigger):
+        from apscheduler.triggers.date import DateTrigger as APSDateTrigger
+        from datetime import datetime as dt
+        from zoneinfo import ZoneInfo
+
+        tz = ZoneInfo(trigger.timezone)
+        run_at = trigger.run_at
+        if run_at.tzinfo is None:
+            run_at = run_at.replace(tzinfo=tz)
+
+        _remove_job(skill.id)
+        job_queue.scheduler.add_job(
+            _run_once_job,
+            trigger=APSDateTrigger(run_date=run_at),
+            id=skill.id,
+            name=skill.id,
+            args=[skill.id],
+            replace_existing=True,
+        )
+        logger.info("Registered one-time skill: %s at %s", skill.id, run_at)
+
     elif isinstance(trigger, CommandTrigger):
         cmd = trigger.command
         if cmd not in _registered_commands:
@@ -146,6 +167,16 @@ async def _run_cron_job(skill_id: str) -> None:
     if not skill or not skill.enabled:
         return
     await skill_executor.execute_skill(skill, _send_message)
+
+
+async def _run_once_job(skill_id: str) -> None:
+    """Wrapper to run a one-time skill then delete it."""
+    skill = get_skill(skill_id)
+    if not skill or not skill.enabled:
+        return
+    await skill_executor.execute_skill(skill, _send_message)
+    await delete_skill(skill_id)
+    logger.info("One-time skill %s fired and deleted", skill_id)
 
 
 def _remove_job(skill_id: str) -> None:

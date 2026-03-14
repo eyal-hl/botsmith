@@ -18,7 +18,7 @@ from bot import config
 from bot.config import is_authorized
 from bot.core import skill_registry, skill_scheduler
 from bot.llm import client as llm_client
-from bot.llm.schemas import CronTrigger, CommandTrigger
+from bot.llm.schemas import CronTrigger, CommandTrigger, OnceTrigger
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +40,8 @@ def _format_skill_preview(skill, explanation: str) -> str:
         trigger_desc = f"⏰ Schedule: `{skill.trigger.cron}` ({skill.trigger.timezone})"
     elif isinstance(skill.trigger, CommandTrigger):
         trigger_desc = f"💬 Command: /{skill.trigger.command}"
+    elif isinstance(skill.trigger, OnceTrigger):
+        trigger_desc = f"🔔 One-time: `{skill.trigger.run_at}` ({skill.trigger.timezone})"
 
     sources_desc = ""
     if skill.data_sources:
@@ -135,6 +137,8 @@ async def handle_confirm(
             trigger_info = f"on schedule `{skill.trigger.cron}`"
         elif isinstance(skill.trigger, CommandTrigger):
             trigger_info = f"via /{skill.trigger.command}"
+        elif isinstance(skill.trigger, OnceTrigger):
+            trigger_info = f"once at `{skill.trigger.run_at}`"
 
         await query.edit_message_text(
             f"✅ *Skill created: {skill.name}*\n\n"

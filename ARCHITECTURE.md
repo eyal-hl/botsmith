@@ -30,6 +30,11 @@ a data source (HTTP API), and a Jinja2 message template. The skill executor is a
 deterministic engine that reads JSON → fetches data → renders template → sends message.
 No LLM is involved at runtime.
 
+**Three trigger types:**
+- `cron` — recurring schedule (APScheduler CronTrigger)
+- `command` — on-demand `/command`
+- `once` — one-time reminder at a specific datetime (APScheduler DateTrigger); the skill is automatically deleted after it fires
+
 Example skill JSON (`skills/morning_weather.json`):
 ```json
 {
@@ -209,9 +214,10 @@ pi-helper-bot/
 
 ### bot/core/skill_scheduler.py
 - Wraps python-telegram-bot's JobQueue (which wraps APScheduler)
-- `register_skill(skill)` → creates a cron or command trigger
+- `register_skill(skill)` → creates a cron, command, or once trigger
 - `unregister_skill(skill_id)` → removes the job
 - `reload_all()` → unregister all, re-register from registry
+- One-time skills (`once` trigger) are automatically deleted from disk after firing
 
 ### bot/core/plugin_loader.py
 - `load_plugin(name)` → `importlib.import_module(f"plugins.{name}")`
@@ -298,7 +304,7 @@ pi-helper-bot/
   - `Intent` — enum: create_skill, update_memory, chat
   - `SkillDefinition` — full skill JSON schema
   - `DataSource` — HTTP source definition
-  - `Trigger` — cron or command trigger
+  - `Trigger` — cron, command, or once trigger
   - `MemoryUpdate` — updated memory text + summary of changes
 
 ---

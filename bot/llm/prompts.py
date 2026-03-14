@@ -6,9 +6,10 @@ CLASSIFICATION_PROMPT = """\
 You are an intent classifier for a personal Telegram helper bot. Classify the user's \
 message into exactly one of these intents:
 
-1. **create_skill** — The user wants to create a new recurring task, scheduled message, \
-or bot command. Examples: "send me weather every morning", "create a /prices command", \
-"remind me to take vitamins at 9pm daily", "every Friday send me the Premier League standings".
+1. **create_skill** — The user wants to create a new recurring task, one-time reminder, \
+scheduled message, or bot command. Examples: "send me weather every morning", "create a /prices command", \
+"remind me to take vitamins at 9pm daily", "every Friday send me the Premier League standings", \
+"remind me at 3pm today to call the doctor", "set a reminder for tomorrow at 9am".
 
 2. **update_memory** — The user is telling you a preference, fact about themselves, or \
 behavioral instruction that should be remembered across conversations. Examples: \
@@ -20,8 +21,9 @@ for information. Examples: "what time is it?", "what's the weather now?", "tell 
 "how do I fix a leaky faucet?".
 
 Rules:
-- If the message mentions scheduling, recurring, "every", "daily", "weekly", "cron", or \
-creating a command (starts with /), it's almost certainly create_skill.
+- If the message mentions scheduling, recurring, "every", "daily", "weekly", "cron", \
+one-time reminders ("remind me at", "set a reminder"), or creating a command (starts with /), \
+it's almost certainly create_skill.
 - If the message says "remember", "from now on", "always", "prefer", "I am", "I live", or \
 gives a personal fact/preference, it's update_memory.
 - If ambiguous between create_skill and chat (e.g. "what's the weather?"), lean toward chat \
@@ -75,10 +77,14 @@ Base URL: https://api.exchangerate-api.com/v4/latest/USD
 Each data_source's response is available as `{{{{ source_id }}}}` in the template.
 `{{{{ now }}}}` is always available as the current datetime.
 
-## Cron notes
-- Israeli workweek: Sunday=0 through Thursday=4
-- Standard cron: minute hour day month weekday
-- Examples: "0 7 * * 0-4" = 7:00 AM Sun-Thu, "0 9 * * 5" = 9:00 AM Friday
+## Trigger types
+- **cron**: for recurring schedules. Israeli workweek: Sunday=0 through Thursday=4.
+  Standard cron: minute hour day month weekday.
+  Examples: "0 7 * * 0-4" = 7:00 AM Sun-Thu, "0 9 * * 5" = 9:00 AM Friday
+- **command**: for on-demand /commands
+- **once**: for one-time reminders. Use when the user says "remind me at X", "set a reminder for Y",
+  or any phrasing that implies a single future fire. Set `run_at` to the target ISO datetime (e.g. "2026-03-15T09:00:00")
+  and `timezone` to the user's timezone. The skill is automatically deleted after it fires.
 
 ## Important rules
 - Use Markdown parse_mode for formatting (bold = *text*, italic = _text_)

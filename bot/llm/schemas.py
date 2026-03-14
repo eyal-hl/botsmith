@@ -41,7 +41,13 @@ class CommandTrigger(BaseModel):
     command: str = Field(description="Command name without /, e.g. 'manchester'")
 
 
-Trigger = CronTrigger | CommandTrigger
+class OnceTrigger(BaseModel):
+    type: Literal["once"] = "once"
+    run_at: datetime = Field(description="The exact datetime to fire, e.g. '2026-03-15T09:00:00'")
+    timezone: str = "Asia/Jerusalem"
+
+
+Trigger = CronTrigger | CommandTrigger | OnceTrigger
 
 
 class SkillDefinition(BaseModel):
