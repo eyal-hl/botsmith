@@ -27,13 +27,16 @@ async def handle_chat(
 
         # Show indicator so user knows bot received the message
         await update.message.reply_text("🔍 Searching...")
+        logger.info("Chat request: %s", message[:100])
 
         try:
             response = await asyncio.wait_for(
                 llm_client.chat(message, memory, history),
                 timeout=CHAT_TIMEOUT,
             )
+            logger.info("Chat response received (%d chars)", len(response))
         except asyncio.TimeoutError:
+            logger.warning("Chat timed out after %ds for: %s", CHAT_TIMEOUT, message[:100])
             await update.message.reply_text(
                 "⏱ Search timed out. Try asking something more specific."
             )

@@ -141,7 +141,7 @@ async def chat(message: str, memory: str, history: list[dict] | None = None) -> 
     client = get_client()
     messages = [*(history or []), {"role": "user", "content": message}]
     system = prompts.make_chat_prompt(memory)
-    tools = [{"type": "web_search_20260209", "name": "web_search"}]
+    tools = [{"type": "web_search_20250305", "name": "web_search"}]
 
     try:
         # Server-side tool loop: handle pause_turn up to 5 continuations
